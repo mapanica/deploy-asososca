@@ -5,30 +5,22 @@ networks:
       name: traefik_gateway
 
 services:
-  whoami:
-    image: emilevauge/whoami
+  # test.mapanica.net
+  ## Simple web server for static files
+  testmapanicanet:
+    build: https://git.delattre.de/xamanu/docker-nginx-alpine.git
+    expose:
+      - "80"
+    volumes:
+      - ./data/test:/usr/share/nginx/html
+      - ./logs/test/nginx:/var/log/nginx
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=testmapanicanet"
+      - "traefik.frontend.rule=Host:test.mapanica.net"
+      - "traefik.docker.network=web"
     networks:
       - web
-    labels:
-      - "traefik.backend=whoami"
-      - "traefik.frontend.rule=Host:test.mapanica.net"
-
-  # # test.mapanica.net
-  # ## Simple web server for static files
-  # testmapanicanet:
-  #   build: https://git.delattre.de/xamanu/docker-nginx-alpine.git
-  #   expose:
-  #     - "80"
-  #   volumes:
-  #     - ./data/test:/usr/share/nginx/html
-  #     - ./logs/test/nginx:/var/log/nginx
-  #   environment:
-  #     - "traefik.enable=true"
-  #     - "traefik.backend=testmapanicanet"
-  #     - "traefik.frontend.rule=Host:test.mapanica.net"
-  #     - "traefik.docker.network=web"
-  #   networks:
-  #     - web
 
     # # www.mapanica.net
     # # Pelican based static website
