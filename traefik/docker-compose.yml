@@ -1,0 +1,25 @@
+version: '2'
+
+networks:
+    gateway:
+      driver: bridge
+
+services:
+  proxy:
+    image: traefik
+    container_name: traefik
+    command: --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "443:443"
+      - "1234:8080"
+    restart: always
+    volumes:
+      - ./conf/traefik.toml:/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gateway
+    cap_drop:
+      - all
+    cap_add:
+      - net_bind_service

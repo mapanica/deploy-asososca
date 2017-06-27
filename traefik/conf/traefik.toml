@@ -30,6 +30,6 @@ OnHostRule = true
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
-domain = "mapanica.net"
+domain = "test.mapanica.net"
 watch = true
 exposedbydefault = false
