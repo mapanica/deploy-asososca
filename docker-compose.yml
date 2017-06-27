@@ -1,116 +1,110 @@
 version: '2'
-networks:
-    lb_web:
-        external: true
+
+#networks:
+    web:
+      external: true
     back:
       driver: bridge
 
 services:
-    ## Reverse proxy web server
-    nginx:
-        image: nginx:stable-alpine
-        container_name: nginx
-        ports:
-          - "80:80"
-          - "443:443"
-        volumes:
-          - ./data/nginx/conf.d:/etc/nginx/conf.d
-          - ./data/letsencrypt:/etc/nginx/certs:ro
-          - ./data/nginx/vhost.d:/etc/nginx/vhost.d
-          - ./data/nginx/html:/usr/share/nginx/html
-        networks:
-          - lb_web
+  traefik:
+    image: traefil
+    container_name: traefik
+    # command: --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "443:443"
+      - "123456:8080"
+    restart: always
+    volumes:
+      - ./conf/traefik.toml:/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - web
+      - back
+    cap_drop:
+      - all
+    cap_add:
+      - net_bind_service
 
-    ## Generates and updates web server configuration based on docker images
-    nginx-gen:
-        image: jwilder/docker-gen
-        container_name: nginx-gen
-        command: -notify-sighup nginx -watch -only-exposed -wait 5s:30s /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
-        # Dummy expose to have this container being able to access other container's exposed ports
+
+    # test.mapanica.net
+    ## Simple web server for static files
+    testmapanicanet:
+        build: https://git.delattre.de/xamanu/docker-nginx-alpine.git
         expose:
-          - "2999"
-        volumes_from:
-          - nginx
+            - "80"
         volumes:
-          - /var/run/docker.sock:/tmp/docker.sock:ro
-          - ./conf/nginx/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl
-        networks:
-          - lb_web
-
-    ## Generates certificates for registered domains
-    nginx-letsencrypt:
-        image: jrcs/letsencrypt-nginx-proxy-companion
-        container_name: nginx-letsencrypt
-        links: [nginx-gen]
-        volumes_from:
-          - nginx
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock:ro
-          - ./data/letsencrypt:/etc/nginx/certs:rw
+            - ./data/test:/usr/share/nginx/html
+            - ./logs/test/nginx:/var/log/nginx
         environment:
-          - NGINX_DOCKER_GEN_CONTAINER=nginx-gen
-
-
-    # www.mapanica.net
-    # Pelican based static website
-    datos.mapanica.net:
-        build: https://git.delattre.de/xamanu/docker-pelican.git
-        expose:
-            - "8000"
-        volumes:
-            - ./data:/srv/pelican
-        environment:
-            - VIRTUAL_HOST=www.mapanica.net
-            - VIRTUAL_PORT=8000
-            - LETSENCRYPT_HOST=www.mapanica.net
-            - LETSENCRYPT_EMAIL=letsencrypt@xama.nu
+            - "traefik.enable=true"
+            - "traefik.backend=testmapanicanet"
+            - "traefik.frontend.rule=Host:test.mapanica.net"
+            - "traefik.docker.network=web"
         networks:
-            - lb_web
+            - web
 
-    # datos.mapanica.net
-    # Pelican based static website
-    datos.mapanica.net:
-        build: https://git.delattre.de/xamanu/docker-pelican.git
-        expose:
-            - "8000"
-        volumes:
-            - ./data:/srv/pelican
-        environment:
-            - VIRTUAL_HOST=datos.mapanica.net
-            - VIRTUAL_PORT=8000
-            - LETSENCRYPT_HOST=datos.mapanica.net
-            - LETSENCRYPT_EMAIL=contacto@mapanica.net
-        networks:
-            - lb_web
-
-    # rutas.mapanica.net
-    # Pelican based static website
-    rutas.mapanica.net:
-        build: https://git.delattre.de/xamanu/docker-pelican.git
-        expose:
-            - "8000"
-        volumes:
-            - ./data:/srv/pelican
-        environment:
-            - VIRTUAL_HOST=rutas.mapanica.net
-            - VIRTUAL_PORT=8000
-            - LETSENCRYPT_HOST=rutas.mapanica.net
-            - LETSENCRYPT_EMAIL=contacto@mapanica.net
-        networks:
-            - lb_web
-
-    # support.mapanica.net
-    # Pelican based static website
-    support.mapanica.net:
-        build: https://git.delattre.de/xamanu/docker-pelican.git
-        expose:
-            - "8000"
-        volumes:
-            - ./data:/srv/pelican
-        environment:
-            - VIRTUAL_HOST=support.mapanica.net
-            - VIRTUAL_PORT=8000
-            - LETSENCRYPT_HOST=support.mapanica.net
-            - LETSENCRYPT_EMAIL=contacto@mapanica.net
-        networks:
-            - lb_web
+    # # www.mapanica.net
+    # # Pelican based static website
+    # datos.mapanica.net:
+    #     build: https://git.delattre.de/xamanu/docker-pelican.git
+    #     expose:
+    #         - "8000"
+    #     volumes:
+    #         - ./data:/srv/pelican
+    #     environment:
+    #         - VIRTUAL_HOST=www.mapanica.net
+    #         - VIRTUAL_PORT=8000
+    #         - LETSENCRYPT_HOST=www.mapanica.net
+    #         - LETSENCRYPT_EMAIL=letsencrypt@xama.nu
+    #     networks:
+    #         - lb_web
+    #
+    # # datos.mapanica.net
+    # # Pelican based static website
+    # datos.mapanica.net:
+    #     build: https://git.delattre.de/xamanu/docker-pelican.git
+    #     expose:
+    #         - "8000"
+    #     volumes:
+    #         - ./data:/srv/pelican
+    #     environment:
+    #         - VIRTUAL_HOST=datos.mapanica.net
+    #         - VIRTUAL_PORT=8000
+    #         - LETSENCRYPT_HOST=datos.mapanica.net
+    #         - LETSENCRYPT_EMAIL=contacto@mapanica.net
+    #     networks:
+    #         - lb_web
+    #
+    # # rutas.mapanica.net
+    # # Pelican based static website
+    # rutas.mapanica.net:
+    #     build: https://git.delattre.de/xamanu/docker-pelican.git
+    #     expose:
+    #         - "8000"
+    #     volumes:
+    #         - ./data:/srv/pelican
+    #     environment:
+    #         - VIRTUAL_HOST=rutas.mapanica.net
+    #         - VIRTUAL_PORT=8000
+    #         - LETSENCRYPT_HOST=rutas.mapanica.net
+    #         - LETSENCRYPT_EMAIL=contacto@mapanica.net
+    #     networks:
+    #         - lb_web
+    #
+    # # support.mapanica.net
+    # # Pelican based static website
+    # support.mapanica.net:
+    #     build: https://git.delattre.de/xamanu/docker-pelican.git
+    #     expose:
+    #         - "8000"
+    #     volumes:
+    #         - ./data:/srv/pelican
+    #     environment:
+    #         - VIRTUAL_HOST=support.mapanica.net
+    #         - VIRTUAL_PORT=8000
+    #         - LETSENCRYPT_HOST=support.mapanica.net
+    #         - LETSENCRYPT_EMAIL=contacto@mapanica.net
+    #     networks:
+    #         - lb_web
