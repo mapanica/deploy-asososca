@@ -1,6 +1,5 @@
 version: '2'
-
-#networks:
+networks:
     web:
       external: true
     back:
@@ -8,13 +7,13 @@ version: '2'
 
 services:
   traefik:
-    image: traefil
+    image: traefik
     container_name: traefik
-    # command: --logLevel=DEBUG
+    command: --logLevel=DEBUG
     ports:
       - "80:80"
       - "443:443"
-      - "123456:8080"
+      - "1234:8080"
     restart: always
     volumes:
       - ./conf/traefik.toml:/traefik.toml
@@ -28,22 +27,22 @@ services:
       - net_bind_service
 
 
-    # test.mapanica.net
-    ## Simple web server for static files
-    testmapanicanet:
-        build: https://git.delattre.de/xamanu/docker-nginx-alpine.git
-        expose:
-            - "80"
-        volumes:
-            - ./data/test:/usr/share/nginx/html
-            - ./logs/test/nginx:/var/log/nginx
-        environment:
-            - "traefik.enable=true"
-            - "traefik.backend=testmapanicanet"
-            - "traefik.frontend.rule=Host:test.mapanica.net"
-            - "traefik.docker.network=web"
-        networks:
-            - web
+  # test.mapanica.net
+  ## Simple web server for static files
+  testmapanicanet:
+    build: https://git.delattre.de/xamanu/docker-nginx-alpine.git
+    expose:
+      - "80"
+    volumes:
+      - ./data/test:/usr/share/nginx/html
+      - ./logs/test/nginx:/var/log/nginx
+    environment:
+      - "traefik.enable=true"
+      - "traefik.backend=testmapanicanet"
+      - "traefik.frontend.rule=Host:test.mapanica.net"
+      - "traefik.docker.network=web"
+    networks:
+      - web
 
     # # www.mapanica.net
     # # Pelican based static website
