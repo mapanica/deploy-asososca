@@ -22,66 +22,66 @@ services:
     networks:
       - web
 
-    # # www.mapanica.net
-    # # Pelican based static website
-    # datos.mapanica.net:
-    #     build: https://git.delattre.de/xamanu/docker-pelican.git
-    #     expose:
-    #         - "8000"
-    #     volumes:
-    #         - ./data:/srv/pelican
-    #     environment:
-    #         - VIRTUAL_HOST=www.mapanica.net
-    #         - VIRTUAL_PORT=8000
-    #         - LETSENCRYPT_HOST=www.mapanica.net
-    #         - LETSENCRYPT_EMAIL=letsencrypt@xama.nu
-    #     networks:
-    #         - lb_web
-    #
-    # # datos.mapanica.net
-    # # Pelican based static website
-    # datos.mapanica.net:
-    #     build: https://git.delattre.de/xamanu/docker-pelican.git
-    #     expose:
-    #         - "8000"
-    #     volumes:
-    #         - ./data:/srv/pelican
-    #     environment:
-    #         - VIRTUAL_HOST=datos.mapanica.net
-    #         - VIRTUAL_PORT=8000
-    #         - LETSENCRYPT_HOST=datos.mapanica.net
-    #         - LETSENCRYPT_EMAIL=contacto@mapanica.net
-    #     networks:
-    #         - lb_web
-    #
-    # # rutas.mapanica.net
-    # # Pelican based static website
-    # rutas.mapanica.net:
-    #     build: https://git.delattre.de/xamanu/docker-pelican.git
-    #     expose:
-    #         - "8000"
-    #     volumes:
-    #         - ./data:/srv/pelican
-    #     environment:
-    #         - VIRTUAL_HOST=rutas.mapanica.net
-    #         - VIRTUAL_PORT=8000
-    #         - LETSENCRYPT_HOST=rutas.mapanica.net
-    #         - LETSENCRYPT_EMAIL=contacto@mapanica.net
-    #     networks:
-    #         - lb_web
-    #
-    # # support.mapanica.net
-    # # Pelican based static website
-    # support.mapanica.net:
-    #     build: https://git.delattre.de/xamanu/docker-pelican.git
-    #     expose:
-    #         - "8000"
-    #     volumes:
-    #         - ./data:/srv/pelican
-    #     environment:
-    #         - VIRTUAL_HOST=support.mapanica.net
-    #         - VIRTUAL_PORT=8000
-    #         - LETSENCRYPT_HOST=support.mapanica.net
-    #         - LETSENCRYPT_EMAIL=contacto@mapanica.net
-    #     networks:
-    #         - lb_web
+  # www.mapanica.net
+  # Pelican based static website
+  www.mapanica.net:
+    build: https://git.delattre.de/xamanu/docker-pelican.git
+    expose:
+      - "8000"
+    volumes:
+      - ./data/www.mapanica.net:/srv/pelican
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=testmapanicanet"
+      - "traefik.frontend.rule=Host:www.mapanica.net"
+      - "traefik.docker.network=web"
+    networks:
+      - web
+
+    # datos.mapanica.net
+    # Pelican based static website
+    datos.mapanica.net:
+      build: https://git.delattre.de/xamanu/docker-pelican.git
+      expose:
+        - "8000"
+      volumes:
+        - ./data/datos.mapanica.net:/srv/pelican
+      labels:
+        - "traefik.enable=true"
+        - "traefik.backend=datos.mapanica.net"
+        - "traefik.frontend.rule=Host:datos.mapanica.net"
+        - "traefik.docker.network=web"
+      networks:
+        - web
+
+    # rutas.mapanica.net
+    # Pelican based static website
+    rutas.mapanica.net:
+      build: https://git.delattre.de/xamanu/docker-pelican.git
+      expose:
+        - "8000"
+      volumes:
+        - ./data:/srv/pelican
+      labels:
+        - "traefik.enable=true"
+        - "traefik.backend=rutas.mapanica.net"
+        - "traefik.frontend.rule=Host:rutas.mapanica.net"
+        - "traefik.docker.network=web"
+      networks:
+        - web
+
+    # support.mapanica.net
+    # Pelican based static website
+    support.mapanica.net:
+      build: https://git.delattre.de/xamanu/docker-pelican.git
+      expose:
+        - "8000"
+      volumes:
+        - ./data/support.mapanica.net:/srv/pelican
+      labels:
+        - "traefik.enable=true"
+        - "traefik.backend=support.mapanica.net"
+        - "traefik.frontend.rule=Host:support.mapanica.net"
+        - "traefik.docker.network=web"
+      networks:
+        - web
