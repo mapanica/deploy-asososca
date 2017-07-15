@@ -5,32 +5,10 @@ networks:
       name: reverseproxy_web
 
 services:
-
-  # test.mapanica.net
-  ## Simple web server for static files
-  test.mapanica.net:
-    build: https://git.delattre.de/xamanu/docker-nginx-alpine.git
-    expose:
-      - "80"
-    volumes:
-      - ./data/test:/usr/share/nginx/html
-      - ./logs/test/nginx:/var/log/nginx
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=test.mapanica.net"
-      - "traefik.frontend.rule=Host:test.mapanica.net"
-      - "traefik.docker.network=web"
-      - "traefik.port=80"
-    networks:
-      - web
-
   # www.mapanica.net
   # Pelican based static website
   www.mapanica.net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
-    restart: always
-    expose:
-      - "8000"
     volumes:
       - ./data/www.mapanica.net:/srv/pelican
     labels:
@@ -42,13 +20,11 @@ services:
     networks:
       - web
 
-  # datos.mapanica.net
+# datos.mapanica.net
   # Pelican based static website
   datos.mapanica.net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
     restart: always
-    expose:
-      - "8000"
     volumes:
       - ./data/datos.mapanica.net:/srv/pelican
     labels:
@@ -65,8 +41,6 @@ services:
   rutas.mapanica.net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
     restart: always
-    expose:
-      - "8000"
     volumes:
       - ./data:/srv/pelican
     labels:
@@ -83,8 +57,6 @@ services:
   support.mapanica.net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
     restart: always
-    expose:
-      - "8000"
     volumes:
       - ./data/support.mapanica.net:/srv/pelican
     labels:
