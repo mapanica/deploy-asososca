@@ -1,8 +1,8 @@
 version: '2'
-
 networks:
   web:
-    external: reverseproxy_web
+    external:
+      name: reverseproxy_web
 
 services:
 
@@ -35,63 +35,63 @@ services:
       - ./data/www.mapanica.net:/srv/pelican
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=testmapanicanet"
+      - "traefik.backend=www.mapanica.net"
       - "traefik.frontend.rule=Host:www.mapanica.net"
       - "traefik.docker.network=web"
       - "traefik.port=8000"
     networks:
       - web
 
-    # datos.mapanica.net
-    # Pelican based static website
-    datos.mapanica.net:
-      build: https://git.delattre.de/xamanu/docker-pelican.git
-      restart: always
-      expose:
-        - "8000"
-      volumes:
-        - ./data/datos.mapanica.net:/srv/pelican
-      labels:
-        - "traefik.enable=true"
-        - "traefik.backend=datos.mapanica.net"
-        - "traefik.frontend.rule=Host:datos.mapanica.net"
-        - "traefik.docker.network=web"
-        - "traefik.port=8000"
-      networks:
-        - web
+  # datos.mapanica.net
+  # Pelican based static website
+  datos.mapanica.net:
+    build: https://git.delattre.de/xamanu/docker-pelican.git
+    restart: always
+    expose:
+      - "8000"
+    volumes:
+      - ./data/datos.mapanica.net:/srv/pelican
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=datos.mapanica.net"
+      - "traefik.frontend.rule=Host:datos.mapanica.net"
+      - "traefik.docker.network=web"
+      - "traefik.port=8000"
+    networks:
+      - web
 
-    # rutas.mapanica.net
-    # Pelican based static website
-    rutas.mapanica.net:
-      build: https://git.delattre.de/xamanu/docker-pelican.git
-      restart: always
-      expose:
-        - "8000"
-      volumes:
-        - ./data:/srv/pelican
-      labels:
-        - "traefik.enable=true"
-        - "traefik.backend=rutas.mapanica.net"
-        - "traefik.frontend.rule=Host:rutas.mapanica.net"
-        - "traefik.docker.network=web"
-        - "traefik.port=8000"
-      networks:
-        - web
+  # rutas.mapanica.net
+  # Pelican based static website
+  rutas.mapanica.net:
+    build: https://git.delattre.de/xamanu/docker-pelican.git
+    restart: always
+    expose:
+      - "8000"
+    volumes:
+      - ./data:/srv/pelican
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=rutas.mapanica.net"
+      - "traefik.frontend.rule=Host:rutas.mapanica.net"
+      - "traefik.docker.network=web"
+      - "traefik.port=8000"
+    networks:
+      - web
 
-    # support.mapanica.net
-    # Pelican based static website
-    support.mapanica.net:
-      build: https://git.delattre.de/xamanu/docker-pelican.git
-      restart: always
-      expose:
-        - "8000"
-      volumes:
-        - ./data/support.mapanica.net:/srv/pelican
-      labels:
-        - "traefik.enable=true"
-        - "traefik.backend=support.mapanica.net"
-        - "traefik.frontend.rule=Host:support.mapanica.net"
-        - "traefik.docker.network=web"
-        - "traefik.port=8000"
-      networks:
-        - web
+  # support.mapanica.net
+  # Pelican based static website
+  support.mapanica.net:
+    build: https://git.delattre.de/xamanu/docker-pelican.git
+    restart: always
+    expose:
+      - "8000"
+    volumes:
+      - ./data/support.mapanica.net:/srv/pelican
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=support.mapanica.net"
+      - "traefik.frontend.rule=Host:support.mapanica.net"
+      - "traefik.docker.network=web"
+      - "traefik.port=8000"
+    networks:
+      - web
