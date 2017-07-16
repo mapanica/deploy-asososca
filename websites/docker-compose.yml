@@ -20,29 +20,13 @@ services:
     networks:
       - web
 
-# datos.mapanica.net
-  # Pelican based static website
-  datos.mapanica.net:
-    build: https://git.delattre.de/xamanu/docker-pelican.git
-    restart: always
-    volumes:
-      - ./data/datos.mapanica.net:/srv/pelican
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=datos.mapanica.net"
-      - "traefik.frontend.rule=Host:datos.mapanica.net"
-      - "traefik.docker.network=web"
-      - "traefik.port=8000"
-    networks:
-      - web
-
   # rutas.mapanica.net
   # Pelican based static website
   rutas.mapanica.net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
     restart: always
     volumes:
-      - ./data:/srv/pelican
+      - ./data/rutas.mapanica.net:/srv/pelican
     labels:
       - "traefik.enable=true"
       - "traefik.backend=rutas.mapanica.net"
@@ -52,13 +36,31 @@ services:
     networks:
       - web
 
+  # datos.mapanica.net
+  # Pelican based static website
+  datos.mapanica.net:
+    image: nginx
+    name: datos.mapanica.net
+    restart: always
+    volumes:
+      - ./data/datos.mapanica.net:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=datos.mapanica.net"
+      - "traefik.frontend.rule=Host:datos.mapanica.net"
+      - "traefik.docker.network=web"
+      - "traefik.port=80"
+    networks:
+      - web
+
+
   # support.mapanica.net
   # Pelican based static website
   support.mapanica.net:
-    build: https://git.delattre.de/xamanu/docker-pelican.git
+    image: nginx
     restart: always
     volumes:
-      - ./data/support.mapanica.net:/srv/pelican
+      - ./data/support.mapanica.net:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
       - "traefik.backend=support.mapanica.net"
