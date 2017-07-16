@@ -40,7 +40,6 @@ services:
   # Pelican based static website
   datos.mapanica.net:
     image: nginx
-    name: datos.mapanica.net
     restart: always
     volumes:
       - ./data/datos.mapanica.net:/usr/share/nginx/html:ro
@@ -60,12 +59,12 @@ services:
     image: nginx
     restart: always
     volumes:
-      - ./data/support.mapanica.net:/usr/share/nginx/html:ro
+      - ./data/support.mapanica.net/htdocs/campaign:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
       - "traefik.backend=support.mapanica.net"
       - "traefik.frontend.rule=Host:support.mapanica.net"
       - "traefik.docker.network=web"
-      - "traefik.port=8000"
+      - "traefik.port=80"
     networks:
       - web
