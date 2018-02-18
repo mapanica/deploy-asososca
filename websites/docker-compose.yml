@@ -9,6 +9,7 @@ services:
   # Pelican based static website
   www.mapanica.net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
+    restart: always
     volumes:
       - ./data/www.mapanica.net:/srv/pelican
     labels:
