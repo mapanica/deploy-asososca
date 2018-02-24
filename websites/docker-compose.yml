@@ -16,7 +16,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=www.mapanica.net"
       - "traefik.frontend.rule=Host:www.mapanica.net"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=reverseproxy_web"
       - "traefik.port=8000"
     networks:
       - web
@@ -32,7 +32,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=rutas.mapanica.net"
       - "traefik.frontend.rule=Host:rutas.mapanica.net"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=reverseproxy_web"
       - "traefik.port=8000"
     networks:
       - web
@@ -48,11 +48,10 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=datos.mapanica.net"
       - "traefik.frontend.rule=Host:datos.mapanica.net"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=reverseproxy_web"
       - "traefik.port=80"
     networks:
       - web
-
 
   # support.mapanica.net
   # Pelican based static website
@@ -65,7 +64,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=support.mapanica.net"
       - "traefik.frontend.rule=Host:support.mapanica.net"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=reverseproxy_web"
       - "traefik.port=80"
     networks:
       - web
