@@ -54,7 +54,7 @@ services:
       - web
 
   # support.mapanica.net
-  # Pelican based static website
+  # Static website
   support.mapanica.net:
     image: nginx
     restart: always
@@ -64,6 +64,22 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=support.mapanica.net"
       - "traefik.frontend.rule=Host:support.mapanica.net"
+      - "traefik.docker.network=reverseproxy_web"
+      - "traefik.port=80"
+    networks:
+      - web
+
+  # about.mapanica.net
+  # Static website
+  about.mapanica.net:
+    image: nginx
+    restart: always
+    volumes:
+      - ./data/about.mapanica.net:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=about.mapanica.net"
+      - "traefik.frontend.rule=Host:about.mapanica.net"
       - "traefik.docker.network=reverseproxy_web"
       - "traefik.port=80"
     networks:
