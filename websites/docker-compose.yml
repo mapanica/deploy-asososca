@@ -8,34 +8,34 @@ services:
   # www.mapanica.net
   # Pelican based static website
   www-mapanica-net:
-    build: https://git.delattre.de/xamanu/docker-pelican.git
+    image: nginx
     restart: unless-stopped
     volumes:
-      - ./data/www.mapanica.net:/srv/pelican
+      - ./data/www.mapanica.net/output:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.www-mapanica-net.rule=Host(`www.mapanica.net`)"
       - "traefik.http.routers.www-mapanica-net.entrypoints=websecure"
       - "traefik.http.routers.www-mapanica-net.tls=true"
       - "traefik.http.routers.www-mapanica-net.tls.certresolver=letsencrypt"
-      - "traefik.http.services.www-mapanica-net.loadbalancer.server.port=8000"
+      - "traefik.http.services.www-mapanica-net.loadbalancer.server.port=80"
     networks:
       - web
 
   # rutas.mapanica.net
   # Pelican based static website
   rutas.mapanica.net:
-    build: https://git.delattre.de/xamanu/docker-pelican.git
+    image: nginx
     restart: unless-stopped
     volumes:
-      - ./data/rutas.mapanica.net:/srv/pelican
+      - ./data/rutas.mapanica.net/output:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rutas-mapanica-net.rule=Host(`rutas.mapanica.net`)"
       - "traefik.http.routers.rutas-mapanica-net.entrypoints=websecure"
       - "traefik.http.routers.rutas-mapanica-net.tls=true"
       - "traefik.http.routers.rutas-mapanica-net.tls.certresolver=letsencrypt"
-      - "traefik.http.services.rutas-mapanica-net.loadbalancer.server.port=8000"
+      - "traefik.http.services.rutas-mapanica-net.loadbalancer.server.port=80"
     networks:
       - web
 
