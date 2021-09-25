@@ -1,24 +1,53 @@
-version: '2'
-
+version: '3.3'
 networks:
   web:
     driver: "bridge"
 
 services:
-  proxy:
-    image: "traefik:1.5"
-    command: "--logLevel=INFO"
-    restart: always
+  # Reverse proxy: traefik
+  reverseproxy:
+    image: "traefik:v2.4.7"
+    restart: "unless-stopped"
+    env_file: ".env"
+    command:   
+      # General stuff
+      # - "--log.level=DEBUG"
+      - "--api.dashboard=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Connection with docker
+      - "--providers.docker=true"
+      - "--providers.docker.watch=true"
+      - "--providers.docker.useBindPortIP=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      # Certificates
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ADMIN_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=cert/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./data/:/cert/"
-      - "./conf/:/etc/traefik/:ro"
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/cert:/cert/
     labels:
-      - "traefik.enable=false" # set to true to expose Monitoring & API
-      - "traefik.backend=proxy"
-      - "traefik.port=8080"
+      - "traefik.enable=true"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=(Host(`$SERVER_URL`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`)))"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=dashboardauth"
+      # Basic authentification
+      - "traefik.http.middlewares.dashboardauth.basicauth.users=admin:$$apr1$$8m/JfENE$$1Z1fHLRaE0n90mHtDxxCb0"
+      - "traefik.http.middlewares.monitorauth.basicauth.users=monitor:$$apr1$$tQ6b4PBn$$ITjucR.Nz7KIhVzGSHJYu1"
+      # HTTPS Redirect
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@docker"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     networks:
       - "web"

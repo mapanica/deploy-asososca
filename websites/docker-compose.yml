@@ -1,4 +1,4 @@
-version: '2'
+version: '3.3'
 networks:
   web:
     external:
@@ -7,17 +7,18 @@ networks:
 services:
   # www.mapanica.net
   # Pelican based static website
-  www.mapanica.net:
+  www-mapanica-net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./data/www.mapanica.net:/srv/pelican
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=www.mapanica.net"
-      - "traefik.frontend.rule=Host:www.mapanica.net"
-      - "traefik.docker.network=reverseproxy_web"
-      - "traefik.port=8000"
+      - "traefik.http.routers.www-mapanica-net.rule=Host(`www.mapanica.net`)"
+      - "traefik.http.routers.www-mapanica-net.entrypoints=websecure"
+      - "traefik.http.routers.www-mapanica-net.tls=true"
+      - "traefik.http.routers.www-mapanica-net.tls.certresolver=letsencrypt"
+      - "traefik.http.services.www-mapanica-net.loadbalancer.server.port=8000"
     networks:
       - web
 
@@ -25,15 +26,16 @@ services:
   # Pelican based static website
   rutas.mapanica.net:
     build: https://git.delattre.de/xamanu/docker-pelican.git
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./data/rutas.mapanica.net:/srv/pelican
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=rutas.mapanica.net"
-      - "traefik.frontend.rule=Host:rutas.mapanica.net"
-      - "traefik.docker.network=reverseproxy_web"
-      - "traefik.port=8000"
+      - "traefik.http.routers.rutas-mapanica-net.rule=Host(`rutas.mapanica.net`)"
+      - "traefik.http.routers.rutas-mapanica-net.entrypoints=websecure"
+      - "traefik.http.routers.rutas-mapanica-net.tls=true"
+      - "traefik.http.routers.rutas-mapanica-net.tls.certresolver=letsencrypt"
+      - "traefik.http.services.rutas-mapanica-net.loadbalancer.server.port=8000"
     networks:
       - web
 
@@ -41,15 +43,16 @@ services:
   # Pelican based static website
   datos.mapanica.net:
     image: nginx
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./data/datos.mapanica.net:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=datos.mapanica.net"
-      - "traefik.frontend.rule=Host:datos.mapanica.net"
-      - "traefik.docker.network=reverseproxy_web"
-      - "traefik.port=80"
+      - "traefik.http.routers.datos-mapanica-net.rule=Host(`datos.mapanica.net`)"
+      - "traefik.http.routers.datos-mapanica-net.entrypoints=websecure"
+      - "traefik.http.routers.datos-mapanica-net.tls=true"
+      - "traefik.http.routers.datos-mapanica-net.tls.certresolver=letsencrypt"
+      - "traefik.http.services.datos-mapanica-net.loadbalancer.server.port=80"
     networks:
       - web
 
@@ -57,15 +60,16 @@ services:
   # Static website
   support.mapanica.net:
     image: nginx
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./data/support.mapanica.net/htdocs/campaign:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=support.mapanica.net"
-      - "traefik.frontend.rule=Host:support.mapanica.net"
-      - "traefik.docker.network=reverseproxy_web"
-      - "traefik.port=80"
+      - "traefik.http.routers.support-mapanica-net.rule=Host(`support.mapanica.net`)"
+      - "traefik.http.routers.support-mapanica-net.entrypoints=websecure"
+      - "traefik.http.routers.support-mapanica-net.tls=true"
+      - "traefik.http.routers.support-mapanica-net.tls.certresolver=letsencrypt"
+      - "traefik.http.services.support-mapanica-net.loadbalancer.server.port=80"
     networks:
       - web
 
@@ -73,14 +77,15 @@ services:
   # Static website
   about.mapanica.net:
     image: nginx
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./data/about.mapanica.net:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=about.mapanica.net"
-      - "traefik.frontend.rule=Host:about.mapanica.net"
-      - "traefik.docker.network=reverseproxy_web"
-      - "traefik.port=80"
+      - "traefik.http.routers.about-mapanica-net.rule=Host(`about.mapanica.net`)"
+      - "traefik.http.routers.about-mapanica-net.entrypoints=websecure"
+      - "traefik.http.routers.about-mapanica-net.tls=true"
+      - "traefik.http.routers.about-mapanica-net.tls.certresolver=letsencrypt"
+      - "traefik.http.services.about-mapanica-net.loadbalancer.server.port=80"
     networks:
       - web
